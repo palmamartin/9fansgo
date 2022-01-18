@@ -585,7 +585,7 @@ func Openfile(t *wind.Text, e *Expand) *wind.Window {
 		if t != nil {
 			ow = t.W
 		}
-		w = Makenewwindow(t)
+		w = MakeOrReuseWindow(t, e)
 		t = &w.Body
 		wind.Winsetname(w, e.Name)
 		if Textload(t, 0, e.Bname, true) >= 0 {

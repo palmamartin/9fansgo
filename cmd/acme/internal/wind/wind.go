@@ -59,6 +59,7 @@ type Window struct {
 	tagtop      draw.Rectangle
 	Editoutlk   util.QLock
 	External    bool
+	Reused      bool
 }
 
 // Text.what
@@ -173,6 +174,15 @@ func windrawbutton(w *Window) {
 
 func Delrunepos(w *Window) int {
 	_, i := parsetag(w, 0)
+	i += 2
+	if i >= w.Tag.Len() {
+		return -1
+	}
+	return i
+}
+
+func Uprunepos(w *Window) int {
+	_, i := parsetag(w, 2)
 	i += 2
 	if i >= w.Tag.Len() {
 		return -1
@@ -482,7 +492,7 @@ func winsettag1(w *Window) {
 		}
 	}
 	if w.IsDir {
-		new_ = append(new_, []rune(" Get")...)
+		new_ = append(new_, []rune(" Up Get")...)
 	}
 	new_ = append(new_, []rune(" |")...)
 	r := runes.IndexRune(old, '|')

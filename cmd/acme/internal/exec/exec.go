@@ -23,6 +23,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"runtime"
 	"strconv"
 	"strings"
@@ -108,6 +109,7 @@ var exectab = [30]Exectab{
 	Exectab{[]rune("Tab"), tab, false, XXX, XXX},
 	Exectab{[]rune("Undo"), ui.XUndo, false, true, XXX},
 	Exectab{[]rune("Zerox"), zeroxx, false, XXX, XXX},
+	Exectab{[]rune("Up"), Up, false, true, XXX},
 }
 
 func lookup(r []rune) *Exectab {
@@ -388,6 +390,24 @@ type TextAddr struct {
 	rq0     int
 	lq1     int
 	rq1     int
+}
+
+func Up(et, t, argt *wind.Text, flag1, _ bool, arg []rune) {
+	if flag1 {
+		if et == nil || et.W == nil {
+			return
+		}
+	}
+	if !et.W.IsDir && (et.W.Body.Len() > 0 && !wind.Winclean(et.W, true)) {
+		return
+	}
+	w := et.W
+	t = &w.Body
+	name := getname(t, argt, arg, false)
+	wind.Winsetname(et.W, []rune(filepath.Dir(filepath.Clean(name))))
+	Get(et, t, argt, flag1, XXX, arg)
+	ui.MoveMouseToUp(et.W)
+	Xfidlog(w, "up")
 }
 
 func Get(et, t, argt *wind.Text, flag1, _ bool, arg []rune) {

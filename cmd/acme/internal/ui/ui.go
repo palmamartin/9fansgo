@@ -15,6 +15,7 @@
 package ui
 
 import (
+	"os"
 	"unicode/utf8"
 
 	"9fans.net/go/cmd/acme/internal/adraw"
@@ -47,6 +48,14 @@ func movetodel(w *wind.Window) {
 		return
 	}
 	adraw.Display.MoveCursor(w.Tag.Fr.PointOf(n).Add(draw.Pt(4, w.Tag.Fr.Font.Height-4)))
+}
+
+func MoveMouseToUp(w *wind.Window) {
+	n := wind.Uprunepos(w)
+	if n < 0 {
+		return
+	}
+	adraw.Display.MoveCursor(w.Tag.Fr.PointOf(n).Add(draw.Pt(125, w.Tag.Fr.Font.Height-4)))
 }
 
 func Clearmouse() {
@@ -348,4 +357,24 @@ func Makenewwindow(t *wind.Text) *wind.Window {
 		wind.Colgrow(w.Col, w, 1)
 	}
 	return w
+}
+
+func MakeOrReuseWindow(t *wind.Text, e *Expand) *wind.Window {
+	if t == nil || t.W == nil {
+		return Makenewwindow(t)
+	}
+
+	fi, err := os.Stat(e.Bname)
+	if err != nil {
+		return Makenewwindow(t)
+	}
+
+	// Reset text and reuse window.
+	if fi.IsDir() {
+		wind.Textreset(&t.W.Body)
+		t.W.Reused = true
+		return t.W
+	}
+
+	return Makenewwindow(t)
 }
